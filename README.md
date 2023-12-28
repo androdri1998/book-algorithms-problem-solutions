@@ -7,5 +7,5 @@ I did try to solve problems in many programming languages, mainly JavaScript, Ty
 
 ## Solutions
 
-| Exercise | Directory | Description |
-| -------- | --------- | ----------- |
+| Chapter | Exercise | Language | Directory | Description |
+| ------- | -------- | -------- | --------- | ----------- |
