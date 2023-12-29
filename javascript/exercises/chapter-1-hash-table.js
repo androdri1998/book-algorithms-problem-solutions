@@ -89,8 +89,9 @@ class HashProvide {
 }
 
 class HashTable {
-  constructor(hashProvider) {
+  constructor(hashProvider, LinkedList) {
     this.collection = [];
+    this.LinkedList = LinkedList;
     this.hashProvider = hashProvider;
   }
 
@@ -120,7 +121,7 @@ class HashTable {
     const index = this.hash(key);
 
     if (!this.getIndex(index)) {
-      const linkedList = new LinkedList();
+      const linkedList = new this.LinkedList();
       this.setIndex(index, linkedList);
     }
 
@@ -131,7 +132,7 @@ class HashTable {
 
 const lettersProvider = new LettersProvider();
 const hashProvider = new HashProvide(lettersProvider);
-const hashTable = new HashTable(hashProvider);
+const hashTable = new HashTable(hashProvider, LinkedList);
 hashTable.add("book", "some book");
 hashTable.add("pen", "some pen");
 hashTable.add("ball", "some ball");
