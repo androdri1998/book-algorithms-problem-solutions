@@ -1,84 +1,144 @@
-const { linkedList } = require("../data-structures/linked-list");
+const LinkedList = require("../data-structures/linked-list");
 
-function getLetters() {
-  const setLetters = [
-    "a",
-    "b",
-    "c",
-    "d",
-    "e",
-    "f",
-    "g",
-    "h",
-    "i",
-    "j",
-    "k",
-    "l",
-    "m",
-    "n",
-    "o",
-    "p",
-    "q",
-    "r",
-    "s",
-    "t",
-    "u",
-    "v",
-    "w",
-    "x",
-    "y",
-    "z",
-  ];
-  const letters = new Map();
+class LettersProvider {
+  constructor() {
+    this.allLetters = [];
+    this.lettersIndex = new Map();
 
-  for (let index = 0; index < setLetters.length; index++) {
-    letters.set(setLetters[index], index);
+    this.loadLetters();
+    this.createLettersIndex();
   }
 
-  return {
-    getIndex: (letter) => {
-      return letters.get(letter);
-    },
-  };
+  loadLetters() {
+    this.allLetters = [
+      "a",
+      "b",
+      "c",
+      "d",
+      "e",
+      "f",
+      "g",
+      "h",
+      "i",
+      "j",
+      "k",
+      "l",
+      "m",
+      "n",
+      "o",
+      "p",
+      "q",
+      "r",
+      "s",
+      "t",
+      "u",
+      "v",
+      "w",
+      "x",
+      "y",
+      "z",
+    ];
+  }
+
+  setLetterIndex(letter, value) {
+    this.lettersIndex.set(letter, value);
+  }
+
+  allLettersSize() {
+    return this.allLetters.length;
+  }
+
+  getLetterByIndex(index) {
+    return this.allLetters[index];
+  }
+
+  getIndexByLetter(letter) {
+    return this.lettersIndex.get(letter);
+  }
+
+  createLettersIndex() {
+    for (let index = 0; index < this.allLettersSize(); index++) {
+      this.setLetterIndex(this.getLetterByIndex(index), index);
+    }
+  }
+
+  getIndex(letter) {
+    const index = this.getIndexByLetter(letter);
+    return index;
+  }
 }
 
-function hash(word) {
+class HashProvide {
+  constructor(lettersProvider) {
+    this.lettersProvider = lettersProvider;
+  }
+
+  firstLetterWord(word) {
+    return word[0].toLowerCase();
+  }
+
+  getLetterIndex(letter) {
+    return this.lettersProvider.getIndex(letter);
+  }
+
   // just a simple hash function to apply in example, not recommended use in production
-  const letters = getLetters();
-
-  const firstLetter = word[0].toLowerCase();
-
-  return letters.getIndex(firstLetter);
+  hash(word) {
+    const firstLetter = this.firstLetterWord(word);
+    return this.getLetterIndex(firstLetter);
+  }
 }
 
-function hashTable() {
-  const collection = [];
+class HashTable {
+  constructor(hashProvider) {
+    this.collection = [];
+    this.hashProvider = hashProvider;
+  }
 
-  return {
-    add: (key, value) => {
-      const index = hash(key);
+  getCollection() {
+    return this.collection;
+  }
 
-      if (!collection[index]) {
-        collection[index] = linkedList();
-      }
+  getIndex(index) {
+    return this.collection[index];
+  }
 
-      collection[index].add(key, value);
-    },
-    get: (key) => {
-      const index = hash(key);
-      return collection[index].get(key);
-    },
-  };
+  setIndex(index, value) {
+    this.collection[index] = value;
+  }
+
+  get(key) {
+    const index = this.hash(key);
+    const linkedList = this.getIndex(index);
+    return linkedList.get(key);
+  }
+
+  hash(key) {
+    return this.hashProvider.hash(key);
+  }
+
+  add(key, value) {
+    const index = this.hash(key);
+
+    if (!this.getIndex(index)) {
+      const linkedList = new LinkedList();
+      this.setIndex(index, linkedList);
+    }
+
+    const linkedList = this.getIndex(index);
+    linkedList.add(key, value);
+  }
 }
 
-const table = hashTable();
-table.add("book", "some book");
-table.add("pen", "some pen");
-table.add("ball", "some ball");
+const lettersProvider = new LettersProvider();
+const hashProvider = new HashProvide(lettersProvider);
+const hashTable = new HashTable(hashProvider);
+hashTable.add("book", "some book");
+hashTable.add("pen", "some pen");
+hashTable.add("ball", "some ball");
 
-console.log(table.get("book"));
+console.log(hashTable.get("book"));
 // output: some book
-console.log(table.get("pen"));
+console.log(hashTable.get("pen"));
 // output: some pen
-console.log(table.get("ball"));
+console.log(hashTable.get("ball"));
 // output: some ball
